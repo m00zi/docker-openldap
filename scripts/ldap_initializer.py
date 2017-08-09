@@ -119,7 +119,31 @@ def render_ldif():
         'scim_rp_client_base64_jwks': consul.kv.get('scim_rp_client_base64_jwks'),
 
         # scripts.ldif
-        # already covered at this point
+        "person_authentication_usercertexternalauthenticator": consul.kv.get("person_authentication_usercertexternalauthenticator"),
+        "person_authentication_passportexternalauthenticator": consul.kv.get("person_authentication_passportexternalauthenticator"),
+        "dynamic_scope_dynamic_permission": consul.kv.get("dynamic_scope_dynamic_permission"),
+        "id_generator_samplescript": consul.kv.get("id_generator_samplescript"),
+        "dynamic_scope_org_name": consul.kv.get("dynamic_scope_org_name"),
+        "dynamic_scope_work_phone": consul.kv.get("dynamic_scope_work_phone"),
+        "cache_refresh_samplescript": consul.kv.get("cache_refresh_samplescript"),
+        "person_authentication_yubicloudexternalauthenticator": consul.kv.get("person_authentication_yubicloudexternalauthenticator"),
+        "uma_rpt_policy_uma_rpt_policy": consul.kv.get("uma_rpt_policy_uma_rpt_policy"),
+        "uma_claims_gathering_uma_claims_gathering": consul.kv.get("uma_claims_gathering_uma_claims_gathering"),
+        "person_authentication_basiclockaccountexternalauthenticator": consul.kv.get("person_authentication_basiclockaccountexternalauthenticator"),
+        "person_authentication_uafexternalauthenticator": consul.kv.get("person_authentication_uafexternalauthenticator"),
+        "person_authentication_otpexternalauthenticator": consul.kv.get("person_authentication_otpexternalauthenticator"),
+        "person_authentication_duoexternalauthenticator": consul.kv.get("person_authentication_duoexternalauthenticator"),
+        "update_user_samplescript": consul.kv.get("update_user_samplescript"),
+        "user_registration_samplescript": consul.kv.get("user_registration_samplescript"),
+        "person_authentication_googleplusexternalauthenticator": consul.kv.get("person_authentication_googleplusexternalauthenticator"),
+        "person_authentication_u2fexternalauthenticator": consul.kv.get("person_authentication_u2fexternalauthenticator"),
+        "person_authentication_supergluuexternalauthenticator": consul.kv.get("person_authentication_supergluuexternalauthenticator"),
+        "person_authentication_basicexternalauthenticator": consul.kv.get("person_authentication_basicexternalauthenticator"),
+        "scim_samplescript": consul.kv.get("scim_samplescript"),
+        "person_authentication_asimbaexternalauthenticator": consul.kv.get("person_authentication_asimbaexternalauthenticator"),
+        "client_registration_samplescript": consul.kv.get("client_registration_samplescript"),
+        "person_authentication_twilio2fa": consul.kv.get("person_authentication_twilio2fa"),
+        "application_session_samplescript": consul.kv.get("application_session_samplescript"),
 
         # replication.ldif
         'replication_dn': consul.kv.get('replication_dn'),

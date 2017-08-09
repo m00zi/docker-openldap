@@ -43,23 +43,14 @@ def guess_ip_addr():
     return addr
 
 
-# def get_id():
-#     ctid = consul.kv.get('ctid') or 0
-#     ctid = int(ctid)
-#     consul.kv.set('ctid', ctid + 1)
-#     return ctid
-
-
 def configure_provider_openldap():
     src = '/ldap/templates/slapd/provider.conf'
     dest = '/opt/symas/etc/openldap/slapd.conf'
 
-    # nid = get_id()
     ctx_data = {
         'openldapSchemaFolder': '/opt/gluu/schema/openldap',
         'encoded_ldap_pw': consul.kv.get('encoded_ldap_pw'),
         'replication_dn': consul.kv.get('replication_dn'),
-        # 'server_id': nid,
     }
 
     with open(src, 'r') as fp:

@@ -144,6 +144,7 @@ def render_ldif():
         "client_registration_samplescript": consul.kv.get("client_registration_samplescript"),
         "person_authentication_twilio2fa": consul.kv.get("person_authentication_twilio2fa"),
         "application_session_samplescript": consul.kv.get("application_session_samplescript"),
+        "uma_rpt_policy_umaclientauthzrptpolicy": consul.kv.get("uma_rpt_policy_umaclientauthzrptpolicy"),
 
         # replication.ldif
         'replication_dn': consul.kv.get('replication_dn'),

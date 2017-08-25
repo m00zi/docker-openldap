@@ -35,6 +35,7 @@ docker pull gluufederation/openldap:latest
 - `GLUU_LDAP_INIT`: whether to import initial LDAP entries (possible value are `true` or `false`).
 - `GLUU_LDAP_INIT_HOST`: hostname of LDAP for initial configuration (only usable when `GLUU_LDAP_INIT` set to `true`).
 - `GLUU_LDAP_INIT_PORT`: port of LDAP for initial configuration (only usable when `GLUU_LDAP_INIT` set to `true`).
+- `GLUU_CUSTOM_SCHEMA_URL`: URL to downloadable custom schema packed using `.tar.gz` format
 
 ## Volumes
 

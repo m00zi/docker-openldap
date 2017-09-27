@@ -135,6 +135,7 @@ def render_ldif():
         "person_authentication_duoexternalauthenticator": consul.kv.get("person_authentication_duoexternalauthenticator"),
         "update_user_samplescript": consul.kv.get("update_user_samplescript"),
         "user_registration_samplescript": consul.kv.get("user_registration_samplescript"),
+        "user_registration_confirmregistrationsamplescript": consul.kv.get("user_registration_confirmregistrationsamplescript"),
         "person_authentication_googleplusexternalauthenticator": consul.kv.get("person_authentication_googleplusexternalauthenticator"),
         "person_authentication_u2fexternalauthenticator": consul.kv.get("person_authentication_u2fexternalauthenticator"),
         "person_authentication_supergluuexternalauthenticator": consul.kv.get("person_authentication_supergluuexternalauthenticator"),

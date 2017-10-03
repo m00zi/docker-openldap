@@ -17,6 +17,7 @@ GLUU_KV_PORT = os.environ.get('GLUU_KV_PORT', 8500)
 GLUU_LDAP_INIT = os.environ.get("GLUU_LDAP_INIT", True)
 GLUU_LDAP_INIT_HOST = os.environ.get('GLUU_LDAP_INIT_HOST', 'localhost')
 GLUU_LDAP_INIT_PORT = os.environ.get("GLUU_LDAP_INIT_PORT", 1389)
+GLUU_CACHE_TYPE = os.environ.get("GLUU_CACHE_TYPE", 'IN_MEMORY')
 GLUU_REDIS_URL = os.environ.get('GLUU_REDIS_URL', 'localhost:6379')
 TMPDIR = tempfile.mkdtemp()
 
@@ -66,9 +67,8 @@ def render_ldif():
 
         # appliance.ldif
         'ldap_use_ssl': consul.kv.get('ldap_use_ssl'),
-        'cache_provider_type': 'IN_MEMORY' if GLUU_REDIS_URL == 'localhost:6379' else 'REDIS',
-        'redis_host': GLUU_REDIS_URL.split(':')[0],
-        'redis_port': GLUU_REDIS_URL.split(':')[1],
+        'cache_provider_type': GLUU_CACHE_TYPE,
+        'redis_url': GLUU_REDIS_URL,
         # oxpassport-config.ldif
         'inumAppliance': consul.kv.get('inumAppliance'),
         'ldap_hostname': consul.kv.get('ldap_init_host'),

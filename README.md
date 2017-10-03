@@ -35,6 +35,7 @@ docker pull gluufederation/openldap:latest
 - `GLUU_LDAP_INIT`: whether to import initial LDAP entries (possible value are `true` or `false`).
 - `GLUU_LDAP_INIT_HOST`: hostname of LDAP for initial configuration (only usable when `GLUU_LDAP_INIT` set to `true`).
 - `GLUU_LDAP_INIT_PORT`: port of LDAP for initial configuration (only usable when `GLUU_LDAP_INIT` set to `true`).
+- `GLUU_CACHE_TYPE`: supported values are 'IN_MEMORY' and 'REDIS', default is 'IN_MEMORY'.
 - `GLUU_REDIS_URL`: Url of redis service, fornat is redis_host:redis_port (optional).
 
 ## Volumes
@@ -54,6 +55,7 @@ docker run -d \
     -e GLUU_LDAP_INIT=true \
     -e GLUU_LDAP_INIT_HOST=my.ldap.hostname \
     -e GLUU_LDAP_INIT_PORT=1389 \
+    -e GLUU_CACHE_TYPE=REDIS \
     -e GLUU_REDIS_URL='my.redis.hostname:6379' \
     -v /path/to/ldap/flag:/flag \
     gluufederation/openldap:containership

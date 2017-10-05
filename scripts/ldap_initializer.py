@@ -17,6 +17,8 @@ GLUU_KV_PORT = os.environ.get('GLUU_KV_PORT', 8500)
 GLUU_LDAP_INIT = os.environ.get("GLUU_LDAP_INIT", True)
 GLUU_LDAP_INIT_HOST = os.environ.get('GLUU_LDAP_INIT_HOST', 'localhost')
 GLUU_LDAP_INIT_PORT = os.environ.get("GLUU_LDAP_INIT_PORT", 1389)
+GLUU_CACHE_TYPE = os.environ.get("GLUU_CACHE_TYPE", 'IN_MEMORY')
+GLUU_REDIS_URL = os.environ.get('GLUU_REDIS_URL', 'localhost:6379')
 TMPDIR = tempfile.mkdtemp()
 
 consul = consulate.Consul(host=GLUU_KV_HOST, port=GLUU_KV_PORT)
@@ -65,6 +67,8 @@ def render_ldif():
 
         # appliance.ldif
         'ldap_use_ssl': consul.kv.get('ldap_use_ssl'),
+        'cache_provider_type': GLUU_CACHE_TYPE,
+        'redis_url': GLUU_REDIS_URL,
         # oxpassport-config.ldif
         'inumAppliance': consul.kv.get('inumAppliance'),
         'ldap_hostname': consul.kv.get('ldap_init_host'),
@@ -119,7 +123,33 @@ def render_ldif():
         'scim_rp_client_base64_jwks': consul.kv.get('scim_rp_client_base64_jwks'),
 
         # scripts.ldif
-        # already covered at this point
+        "person_authentication_usercertexternalauthenticator": consul.kv.get("person_authentication_usercertexternalauthenticator"),
+        "person_authentication_passportexternalauthenticator": consul.kv.get("person_authentication_passportexternalauthenticator"),
+        "dynamic_scope_dynamic_permission": consul.kv.get("dynamic_scope_dynamic_permission"),
+        "id_generator_samplescript": consul.kv.get("id_generator_samplescript"),
+        "dynamic_scope_org_name": consul.kv.get("dynamic_scope_org_name"),
+        "dynamic_scope_work_phone": consul.kv.get("dynamic_scope_work_phone"),
+        "cache_refresh_samplescript": consul.kv.get("cache_refresh_samplescript"),
+        "person_authentication_yubicloudexternalauthenticator": consul.kv.get("person_authentication_yubicloudexternalauthenticator"),
+        "uma_rpt_policy_uma_rpt_policy": consul.kv.get("uma_rpt_policy_uma_rpt_policy"),
+        "uma_claims_gathering_uma_claims_gathering": consul.kv.get("uma_claims_gathering_uma_claims_gathering"),
+        "person_authentication_basiclockaccountexternalauthenticator": consul.kv.get("person_authentication_basiclockaccountexternalauthenticator"),
+        "person_authentication_uafexternalauthenticator": consul.kv.get("person_authentication_uafexternalauthenticator"),
+        "person_authentication_otpexternalauthenticator": consul.kv.get("person_authentication_otpexternalauthenticator"),
+        "person_authentication_duoexternalauthenticator": consul.kv.get("person_authentication_duoexternalauthenticator"),
+        "update_user_samplescript": consul.kv.get("update_user_samplescript"),
+        "user_registration_samplescript": consul.kv.get("user_registration_samplescript"),
+        "user_registration_confirmregistrationsamplescript": consul.kv.get("user_registration_confirmregistrationsamplescript"),
+        "person_authentication_googleplusexternalauthenticator": consul.kv.get("person_authentication_googleplusexternalauthenticator"),
+        "person_authentication_u2fexternalauthenticator": consul.kv.get("person_authentication_u2fexternalauthenticator"),
+        "person_authentication_supergluuexternalauthenticator": consul.kv.get("person_authentication_supergluuexternalauthenticator"),
+        "person_authentication_basicexternalauthenticator": consul.kv.get("person_authentication_basicexternalauthenticator"),
+        "scim_samplescript": consul.kv.get("scim_samplescript"),
+        "person_authentication_samlexternalauthenticator": consul.kv.get("person_authentication_samlexternalauthenticator"),
+        "client_registration_samplescript": consul.kv.get("client_registration_samplescript"),
+        "person_authentication_twilio2fa": consul.kv.get("person_authentication_twilio2fa"),
+        "application_session_samplescript": consul.kv.get("application_session_samplescript"),
+        "uma_rpt_policy_umaclientauthzrptpolicy": consul.kv.get("uma_rpt_policy_umaclientauthzrptpolicy"),
 
         # replication.ldif
         'replication_dn': consul.kv.get('replication_dn'),

@@ -7,7 +7,7 @@
 
     "baseDN":"o=gluu",
 
-    "baseEndpoint":"https://%(hostname)s/identity/seam/resource/restv1",
+    "baseEndpoint":"https://%(hostname)s/identity/restv1",
 
     "idpUrl":"https://%(hostname)s",
     "applianceUrl":"https://%(hostname)s",
@@ -104,21 +104,19 @@
 
     "scimUmaClientId":"%(scim_rs_client_id)s",
     "scimUmaClientKeyId":"",
-    "scimUmaResourceId":"1447184268430",
-    "scimUmaScope":"https://%(hostname)s/oxauth/seam/resource/restv1/uma/scopes/scim_access",
+    "scimUmaResourceId":"0f13ae5a-135e-4b01-a290-7bbe62e7d40f",
+    "scimUmaScope":"https://%(hostname)s/oxauth/restv1/uma/scopes/scim_access",
     "scimUmaClientKeyStoreFile":"%(scim_rs_client_jks_fn)s",
     "scimUmaClientKeyStorePassword":"%(scim_rs_client_jks_pass_encoded)s",
 
     "passportUmaClientId":"%(passport_rs_client_id)s",
     "passportUmaClientKeyId":"",
-    "passportUmaResourceId":"1447184268440",
-    "passportUmaScope":"https://%(hostname)s/oxauth/seam/resource/restv1/uma/scopes/passport_access",
+    "passportUmaResourceId":"0f963ecc-93f0-49c1-beae-ad2006abbb99",
+    "passportUmaScope":"https://%(hostname)s/oxauth/restv1/uma/scopes/passport_access",
     "passportUmaClientKeyStoreFile":"%(passport_rs_client_jks_fn)s",
     "passportUmaClientKeyStorePassword":"%(passport_rs_client_jks_pass_encoded)s",
-
     "cssLocation":"",
     "jsLocation":"",
-
     "rptConnectionPoolUseConnectionPooling":true,
     "rptConnectionPoolMaxTotal":200,
     "rptConnectionPoolDefaultMaxPerRoute":20,
@@ -136,5 +134,8 @@
     "idp3EncryptionCert":"/etc/certs/idp-encryption.crt",
 
     "clientWhiteList": ["*"],
-    "clientBlackList": ["*.attacker.com/*"]
+    "clientBlackList": ["*.attacker.com/*"],
+    "ScimProperties": {
+        "maxCount": 200
+    }
 }

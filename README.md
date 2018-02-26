@@ -41,7 +41,7 @@ docker pull gluufederation/openldap:latest
 - `GLUU_LDAP_INIT_PORT`: port of LDAP for initial configuration (only usable when `GLUU_LDAP_INIT` set to `true`).
 - `GLUU_CUSTOM_SCHEMA_URL`: URL to downloadable custom schema packed using `.tar.gz` format
 - `GLUU_CACHE_TYPE`: supported values are 'IN_MEMORY' and 'REDIS', default is 'IN_MEMORY'.
-- `GLUU_REDIS_URL`: Url of redis service, fornat is redis_host:redis_port (optional).
+- `GLUU_REDIS_URL`: URL of redis service, format is `redis_host:redis_port` (optional).
 
 ## Volumes
 

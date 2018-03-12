@@ -2,6 +2,10 @@
 
 A docker image version of OpenLDAP.
 
+## Latest Stable Release
+
+Latest stable release is `gluufederation/openldap:3.0.1_rev1.0.0-beta4`. See `CHANGES.md` for archives.
+
 ## Versioning/Tagging
 
 This image uses its own versioning/tagging format.
@@ -35,8 +39,9 @@ docker pull gluufederation/openldap:latest
 - `GLUU_LDAP_INIT`: whether to import initial LDAP entries (possible value are `true` or `false`).
 - `GLUU_LDAP_INIT_HOST`: hostname of LDAP for initial configuration (only usable when `GLUU_LDAP_INIT` set to `true`).
 - `GLUU_LDAP_INIT_PORT`: port of LDAP for initial configuration (only usable when `GLUU_LDAP_INIT` set to `true`).
+- `GLUU_CUSTOM_SCHEMA_URL`: URL to downloadable custom schema packed using `.tar.gz` format
 - `GLUU_CACHE_TYPE`: supported values are 'IN_MEMORY' and 'REDIS', default is 'IN_MEMORY'.
-- `GLUU_REDIS_URL`: Url of redis service, fornat is redis_host:redis_port (optional).
+- `GLUU_REDIS_URL`: URL of redis service, format is `redis_host:redis_port` (optional).
 
 ## Volumes
 

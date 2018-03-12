@@ -53,6 +53,7 @@ def ldap_conn(host, port, user, passwd, protocol="ldap", starttls=False):
         conn = ldap.initialize("{}://{}:{}".format(
             protocol, host, port
         ))
+        conn.set_option(ldap.OPT_NETWORK_TIMEOUT, 10.0)
         if starttls:
             conn.start_tls_s()
         conn.bind_s(user, passwd)
@@ -173,44 +174,41 @@ def get_active_servers():
     if not servers:
         servers = _get_servers_from_kv()
 
-    active_servers = [
-        LDAPServer(server_id=idx, host=server["host"], port=server["port"])
-        for idx, server in enumerate(servers, 1)
-    ]
-    return active_servers
-
-
-def _get_servers_from_catalog():
-    active_servers = [
-        {"host": service["Address"], "port": service["ServicePort"]}
-        for service in consul.catalog.service("ldap-master")
-    ]
-    return active_servers
-
-
-def _get_servers_from_kv():
-    active_servers = []
-    servers = [
-        json.loads(master)
-        for master in consul.kv.find("ldap_masters", []).values()
-    ]
-
     user = "cn=directory manager,o=gluu"
     passwd = decrypt_text(consul.kv.get("encoded_ox_replication_pw"),
                           consul.kv.get("encoded_salt"))
 
-    for server in servers:
+    active_servers = []
+    for idx, server in enumerate(servers):
         try:
             logger.info("connecting to server {}:{}".format(server["host"], server["port"]))
             with ldap_conn(server["host"], server["port"], user, passwd):
                 logger.info("server {}:{} marked as active".format(server["host"], server["port"]))
-                active_servers.append(server)
+                active_servers.append(
+                    LDAPServer(server_id=idx, host=server["host"], port=server["port"])
+                )
         except ldap.SERVER_DOWN as exc:
             logger.warn("excluding server {}:{}; reason={}".format(
                 server["host"], server["port"], exc
             ))
             continue
     return active_servers
+
+
+def _get_servers_from_catalog():
+    servers = [
+        {"host": service["Address"], "port": service["ServicePort"]}
+        for service in consul.catalog.service("ldap-master")
+    ]
+    return servers
+
+
+def _get_servers_from_kv():
+    servers = [
+        json.loads(master)
+        for master in consul.kv.find("ldap_masters", []).values()
+    ]
+    return servers
 
 
 if __name__ == "__main__":

@@ -6,6 +6,8 @@ import struct
 
 import consulate
 
+from ldap_initializer import decrypt_text
+
 GLUU_KV_HOST = os.environ.get('GLUU_KV_HOST', 'localhost')
 GLUU_KV_PORT = os.environ.get('GLUU_KV_PORT', 8500)
 
@@ -67,6 +69,21 @@ def configure_provider_openldap():
     })
 
 
+def sync_ldap_certs():
+    """Gets openldap.crt, openldap.key, and openldap.pem
+    """
+    ssl_cert = decrypt_text(consul.kv.get("ldap_ssl_cert"), consul.kv.get("encoded_salt"))
+    with open("/etc/certs/openldap.crt", "w") as fw:
+        fw.write(ssl_cert)
+    ssl_key = decrypt_text(consul.kv.get("ldap_ssl_key"), consul.kv.get("encoded_salt"))
+    with open("/etc/certs/openldap.key", "w") as fw:
+        fw.write(ssl_key)
+    ssl_cacert = decrypt_text(consul.kv.get("ldap_ssl_cacert"), consul.kv.get("encoded_salt"))
+    with open("/etc/certs/openldap.pem", "w") as fw:
+        fw.write(ssl_cacert)
+
+
 if __name__ == "__main__":
     logger.info('start of basic configuration')
+    sync_ldap_certs()
     configure_provider_openldap()

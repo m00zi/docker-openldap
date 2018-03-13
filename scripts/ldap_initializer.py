@@ -54,19 +54,17 @@ def runcmd(args, cwd=None, env=None, useWait=False):
                 logger.info(output)
             if err:
                 logger.warn(err)
-
-    except:
+    except Exception:
         logger.warn('Error running command : %s' % ' '.join(args))
         logger.warn(traceback.format_exc())
 
 
 def render_ldif():
-    ctx_data = {
+    ctx = {
         # o_site.ldif
         # has no variables
 
         # appliance.ldif
-        'ldap_use_ssl': consul.kv.get('ldap_use_ssl'),
         'cache_provider_type': GLUU_CACHE_TYPE,
         'redis_url': GLUU_REDIS_URL,
         # oxpassport-config.ldif
@@ -104,7 +102,7 @@ def render_ldif():
         'oxtrust_cache_refresh_base64': consul.kv.get('oxtrust_cache_refresh_base64'),
         'oxtrust_import_person_base64': consul.kv.get('oxtrust_import_person_base64'),
         'oxidp_config_base64': consul.kv.get('oxidp_config_base64'),
-        'oxcas_config_base64': consul.kv.get('oxcas_config_base64'),
+        # 'oxcas_config_base64': consul.kv.get('oxcas_config_base64'),
         'oxasimba_config_base64': consul.kv.get('oxasimba_config_base64'),
 
         # passport.ldif
@@ -150,6 +148,12 @@ def render_ldif():
         "person_authentication_twilio2fa": consul.kv.get("person_authentication_twilio2fa"),
         "application_session_samplescript": consul.kv.get("application_session_samplescript"),
         "uma_rpt_policy_umaclientauthzrptpolicy": consul.kv.get("uma_rpt_policy_umaclientauthzrptpolicy"),
+        "person_authentication_samlpassportauthenticator": consul.kv.get("person_authentication_samlpassportauthenticator"),
+        "consent_gathering_consentgatheringsample": consul.kv.get("consent_gathering_consentgatheringsample"),
+
+        # scripts_cred_manager
+        "person_authentication_credmanager": consul.kv.get("person_authentication_credmanager"),
+        "client_registration_credmanager": consul.kv.get("client_registration_credmanager"),
 
         # replication.ldif
         'replication_dn': consul.kv.get('replication_dn'),
@@ -163,7 +167,7 @@ def render_ldif():
         with open(file_path, 'r') as fp:
             template = fp.read()
         # render
-        rendered_content = template % ctx_data
+        rendered_content = template % ctx
         # write to tmpdir
         with open(os.path.join(TMPDIR, os.path.basename(file_path)), 'w') as fp:
             fp.write(rendered_content)

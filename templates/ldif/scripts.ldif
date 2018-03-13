@@ -25,7 +25,7 @@ dn: inum=%(inumOrg)s!2FDB.CF02,ou=scripts,o=%(inumOrg)s,o=gluu
 objectClass: oxCustomScript
 objectClass: top
 description: Passport authentication module
-displayName: passport
+displayName: passport_social
 gluuStatus: false
 inum: %(inumOrg)s!2FDB.CF02
 oxConfigurationProperty: {"value1":"generic_remote_attributes_list","value2":"username, email, name, name, givenName, familyName, provider","description":""}
@@ -288,25 +288,6 @@ oxScript::%(user_registration_confirmregistrationsamplescript)s
 oxScriptType: user_registration
 programmingLanguage: python
 
-dn: inum=%(inumOrg)s!0011!7523.8F2D,ou=scripts,o=%(inumOrg)s,o=gluu
-objectClass: top
-objectClass: oxCustomScript
-description: Google+ authentication module
-displayName: gplus
-gluuStatus: false
-inum: %(inumOrg)s!0011!7523.8F2D
-oxConfigurationProperty: {"value1":"gplus_client_secrets_file","value2":"/etc/certs/gplus_client_secrets.json","description":""}
-oxConfigurationProperty: {"value1":"gplus_deployment_type","value2":"enroll","description":""}
-oxConfigurationProperty: {"value1":"gplus_remote_attributes_list","value2":"email, email, name, family_name, given_name, locale","description":""}
-oxConfigurationProperty: {"value1":"gplus_local_attributes_list","value2":"uid, mail, givenName, sn, cn, preferredLanguage","description":""}
-oxLevel: 40
-oxModuleProperty: {"value1":"usage_type","value2":"interactive","description":""}
-oxModuleProperty: {"value1":"location_type","value2":"ldap","description":""}
-oxRevision: 1
-oxScript::%(person_authentication_googleplusexternalauthenticator)s
-oxScriptType: person_authentication
-programmingLanguage: python
-
 dn: inum=%(inumOrg)s!0011!8BAF.80D6,ou=scripts,o=%(inumOrg)s,o=gluu
 objectClass: top
 objectClass: oxCustomScript
@@ -358,7 +339,7 @@ oxLevel: 100
 oxModuleProperty: {"value1":"usage_type","value2":"interactive","description":""}
 oxModuleProperty: {"value1":"location_type","value2":"ldap","description":""}
 oxRevision: 1
-oxScript::%(person_authentication_basicexternalauthenticator)s 
+oxScript::%(person_authentication_basicexternalauthenticator)s
 oxScriptType: person_authentication
 programmingLanguage: python
 
@@ -404,6 +385,23 @@ oxScript::%(person_authentication_samlexternalauthenticator)s
 oxScriptType: person_authentication
 programmingLanguage: python
 
+dn: inum=%(inumOrg)s!D40C.1CA4,ou=scripts,o=%(inumOrg)s,o=gluu
+objectClass: oxCustomScript
+objectClass: top
+description: Passport SAML authentication module
+displayName: passport_saml
+gluuStatus: false
+inum: %(inumOrg)s!D40C.1CA4
+oxConfigurationProperty: {"value1":"generic_remote_attributes_list","value2":"username, email, name, name, givenName, familyName, provider","description":""}
+oxConfigurationProperty: {"value1":"generic_local_attributes_list","value2":"uid, mail, cn, displayName, givenName, sn, provider","description":""}
+oxLevel: 50
+oxModuleProperty: {"value1":"usage_type","value2":"interactive","description":""}
+oxModuleProperty: {"value1":"location_type","value2":"ldap","description":""}
+oxRevision: 1
+oxScript::%(person_authentication_samlpassportauthenticator)s
+oxScriptType: person_authentication
+programmingLanguage: python
+
 dn: inum=%(inumOrg)s!0011!DAA9.B788,ou=scripts,o=%(inumOrg)s,o=gluu
 objectClass: top
 objectClass: oxCustomScript
@@ -412,6 +410,7 @@ displayName: client_registration
 gluuStatus: false
 inum: %(inumOrg)s!0011!DAA9.B788
 oxLevel: 100
+oxConfigurationProperty: {"value1":"client_redirect_uris","value2":"https://client.example.com/example1, https://client.example.com/example2","description":""}
 oxModuleProperty: {"value1":"location_type","value2":"ldap","description":""}
 oxRevision: 1
 oxScript::%(client_registration_samplescript)s
@@ -450,3 +449,16 @@ oxScript::%(application_session_samplescript)s
 oxScriptType: application_session
 programmingLanguage: python
 
+dn: inum=%(inumOrg)s!0011!DAA9.BA60,ou=scripts,o=%(inumOrg)s,o=gluu
+objectClass: top
+objectClass: oxCustomScript
+description: Consent Gathering script
+displayName: consent_gathering
+gluuStatus: false
+inum: %(inumOrg)s!0011!DAA9.BA60
+oxLevel: 10
+oxModuleProperty: {"value1":"location_type","value2":"ldap","description":""}
+oxRevision: 1
+oxScript::%(consent_gathering_consentgatheringsample)s
+oxScriptType: consent_gathering
+programmingLanguage: python

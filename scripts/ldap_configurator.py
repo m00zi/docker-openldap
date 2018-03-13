@@ -44,7 +44,7 @@ def guess_ip_addr():
 
 
 def configure_provider_openldap():
-    src = '/ldap/templates/slapd/provider.conf'
+    src = '/ldap/templates/slapd/slapd.conf'
     dest = '/opt/symas/etc/openldap/slapd.conf'
 
     ctx_data = {
@@ -61,7 +61,7 @@ def configure_provider_openldap():
 
     # register master
     host = guess_ip_addr()
-    port = consul.kv.get("ldap_port", 1389)
+    port = consul.kv.get("ldaps_port", 1636)
     consul.kv.set("ldap_masters/{}:{}".format(host, port), {
         "host": host, "port": port,
     })

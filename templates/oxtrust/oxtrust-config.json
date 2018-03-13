@@ -72,7 +72,7 @@
 
     "idpBindDn":"cn=Directory Manager",
     "idpBindPassword":"%(encoded_ox_ldap_pw)s",
-    "idpLdapProtocol":"ldap",
+    "idpLdapProtocol":"ldaps",
     "idpLdapServer":"%(ldap_hostname)s:%(ldaps_port)s",
     "idpUserFields":"",
 
@@ -115,16 +115,15 @@
     "passportUmaScope":"https://%(hostname)s/oxauth/restv1/uma/scopes/passport_access",
     "passportUmaClientKeyStoreFile":"%(passport_rs_client_jks_fn)s",
     "passportUmaClientKeyStorePassword":"%(passport_rs_client_jks_pass_encoded)s",
+
     "cssLocation":"",
     "jsLocation":"",
+
     "rptConnectionPoolUseConnectionPooling":true,
     "rptConnectionPoolMaxTotal":200,
     "rptConnectionPoolDefaultMaxPerRoute":20,
     "rptConnectionPoolValidateAfterInactivity":10,
     "rptConnectionPoolCustomKeepAliveTimeout":5,
-
-    "scimTestMode":false,
-    "scimTestModeAccessToken":"",
 
     "shibbolethVersion":"%(shibboleth_version)s",
     "shibboleth3IdpRootDir":"%(idp3Folder)s",
@@ -135,6 +134,8 @@
 
     "clientWhiteList": ["*"],
     "clientBlackList": ["*.attacker.com/*"],
+
+    "scimTestMode":false,
     "ScimProperties": {
         "maxCount": 200
     }

@@ -10,7 +10,6 @@ RUN apt-get update && apt-get install -y \
     python-pip \
     swig \
     libssl-dev \
-    ntp \
     libldap2-dev \
     libsasl2-dev \
     && apt-get clean \
@@ -48,7 +47,7 @@ RUN mkdir -p /var/symas/run \
     && mkdir -p /etc/certs \
     && mkdir -p /opt/symas/etc/openldap/slapd.d \
     && mkdir -p /opt/gluu/data/main_db \
-    && mkdir - /opt/gluu/data/site_db
+    && mkdir -p /opt/gluu/data/site_db
 
 COPY schema /opt/gluu/schema/openldap
 COPY templates ./templates

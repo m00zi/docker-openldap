@@ -20,6 +20,26 @@ fmt = logging.Formatter('[%(levelname)s] - %(asctime)s - %(message)s')
 ch.setFormatter(fmt)
 logger.addHandler(ch)
 
+CONFIG_PREFIX = "gluu/config/"
+
+
+def merge_path(name):
+    # example: `hostname` renamed to `gluu/config/hostname`
+    return "".join([CONFIG_PREFIX, name])
+
+
+def unmerge_path(name):
+    # example: `gluu/config/hostname` renamed to `hostname`
+    return name[len(CONFIG_PREFIX):]
+
+
+def get_config(name, default=None):
+    return consul.kv.get(merge_path(name), default)
+
+
+def set_config(name, value):
+    return consul.kv.set(merge_path(name), value)
+
 
 def get_ip_addr(ifname):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -51,8 +71,8 @@ def configure_provider_openldap():
 
     ctx_data = {
         'openldapSchemaFolder': '/opt/gluu/schema/openldap',
-        'encoded_ldap_pw': consul.kv.get('encoded_ldap_pw'),
-        'replication_dn': consul.kv.get('replication_dn'),
+        'encoded_ldap_pw': get_config('encoded_ldap_pw'),
+        'replication_dn': get_config('replication_dn'),
     }
 
     with open(src, 'r') as fp:
@@ -63,8 +83,8 @@ def configure_provider_openldap():
 
     # register master
     host = guess_ip_addr()
-    port = consul.kv.get("ldaps_port", 1636)
-    consul.kv.set("ldap_masters/{}:{}".format(host, port), {
+    port = get_config("ldaps_port", 1636)
+    set_config("ldap_masters/{}:{}".format(host, port), {
         "host": host, "port": port,
     })
 
@@ -72,13 +92,13 @@ def configure_provider_openldap():
 def sync_ldap_certs():
     """Gets openldap.crt, openldap.key, and openldap.pem
     """
-    ssl_cert = decrypt_text(consul.kv.get("ldap_ssl_cert"), consul.kv.get("encoded_salt"))
+    ssl_cert = decrypt_text(get_config("ldap_ssl_cert"), get_config("encoded_salt"))
     with open("/etc/certs/openldap.crt", "w") as fw:
         fw.write(ssl_cert)
-    ssl_key = decrypt_text(consul.kv.get("ldap_ssl_key"), consul.kv.get("encoded_salt"))
+    ssl_key = decrypt_text(get_config("ldap_ssl_key"), get_config("encoded_salt"))
     with open("/etc/certs/openldap.key", "w") as fw:
         fw.write(ssl_key)
-    ssl_cacert = decrypt_text(consul.kv.get("ldap_ssl_cacert"), consul.kv.get("encoded_salt"))
+    ssl_cacert = decrypt_text(get_config("ldap_ssl_cacert"), get_config("encoded_salt"))
     with open("/etc/certs/openldap.pem", "w") as fw:
         fw.write(ssl_cacert)
 

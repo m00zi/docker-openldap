@@ -11,6 +11,8 @@ from ldap_initializer import decrypt_text
 GLUU_KV_HOST = os.environ.get('GLUU_KV_HOST', 'localhost')
 GLUU_KV_PORT = os.environ.get('GLUU_KV_PORT', 8500)
 
+GLUU_LDAP_ADDR_INTERFACE = os.environ.get("GLUU_LDAP_ADDR_INTERFACE", "")
+
 consul = consulate.Consul(host=GLUU_KV_HOST, port=GLUU_KV_PORT)
 
 logger = logging.getLogger("ldap_configurator")
@@ -51,11 +53,14 @@ def get_ip_addr(ifname):
     return addr
 
 
-def guess_ip_addr():
+def guess_ip_addr(ifname=GLUU_LDAP_ADDR_INTERFACE):
     addr = ""
 
+    if ifname:
+        return get_ip_addr(ifname)
+
     # priorities
-    for ifname in ("eth1", "eth0", "wlan0"):
+    for ifname in ("eth1", "eth0"):
         try:
             addr = get_ip_addr(ifname)
         except IOError:

@@ -19,6 +19,7 @@ GLUU_LDAP_INIT_PORT = os.environ.get("GLUU_LDAP_INIT_PORT", 1389)
 GLUU_CACHE_TYPE = os.environ.get("GLUU_CACHE_TYPE", 'IN_MEMORY')
 GLUU_REDIS_URL = os.environ.get('GLUU_REDIS_URL', 'localhost:6379')
 TMPDIR = tempfile.mkdtemp()
+GLUU_OXTRUST_CONFIG_GENERATION = os.environ.get("GLUU_OXTRUST_CONFIG_GENERATION", False)
 
 consul = consulate.Consul(host=GLUU_KV_HOST, port=GLUU_KV_PORT)
 
@@ -299,7 +300,7 @@ def run():
     if as_boolean(GLUU_LDAP_INIT):
         set_config('ldap_init_host', GLUU_LDAP_INIT_HOST)
         set_config('ldap_init_port', GLUU_LDAP_INIT_PORT)
-        set_config("oxTrustConfigGeneration", False)
+        set_config("oxTrustConfigGeneration", as_boolean(GLUU_OXTRUST_CONFIG_GENERATION))
 
         oxtrust_config()
         logger.info('start rendering of ldif files')

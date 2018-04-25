@@ -25,7 +25,7 @@ consul = consulate.Consul(host=GLUU_KV_HOST, port=GLUU_KV_PORT)
 
 logger = logging.getLogger("ldap_initializer")
 logger.setLevel(logging.INFO)
-ch = logging.FileHandler('/ldap/ldap_initializer.log')
+ch = logging.StreamHandler()
 fmt = logging.Formatter('[%(levelname)s] - %(asctime)s - %(message)s')
 ch.setFormatter(fmt)
 logger.addHandler(ch)
@@ -224,16 +224,6 @@ def import_ldif():
             runcmd([slapadd_cmd, '-b', 'o=gluu', '-f', config, '-l', ldif_file_path])
 
 
-def import_custom_schema():
-    base_path = '/ldap/custom_schema'
-    pattern = '/*.ldif'
-    slapadd_cmd = '/opt/symas/bin/slapadd'
-    config = '/opt/symas/etc/openldap/slapd.conf'
-
-    for file_path in glob.glob(base_path + pattern):
-        runcmd([slapadd_cmd, '-b', 'o=gluu', '-f', config, '-l', file_path])
-
-
 def cleanup():
     shutil.rmtree(TMPDIR)
 
@@ -307,8 +297,6 @@ def run():
         render_ldif()
         logger.info('start importing rendered ldif files')
         import_ldif()
-        logger.info('start importing custom ldif file')
-        import_custom_schema()
     cleanup()
 
 

@@ -1,4 +1,5 @@
 import fcntl
+import glob
 import logging
 import os
 import socket
@@ -17,7 +18,7 @@ consul = consulate.Consul(host=GLUU_KV_HOST, port=GLUU_KV_PORT)
 
 logger = logging.getLogger("ldap_configurator")
 logger.setLevel(logging.INFO)
-ch = logging.FileHandler('/ldap/ldap_configurator.log')
+ch = logging.StreamHandler()
 fmt = logging.Formatter('[%(levelname)s] - %(asctime)s - %(message)s')
 ch.setFormatter(fmt)
 logger.addHandler(ch)
@@ -70,6 +71,15 @@ def guess_ip_addr(ifname=GLUU_LDAP_ADDR_INTERFACE):
     return addr
 
 
+def get_custom_schema():
+    pattern = "/ldap/custom_schema/*.schema"
+
+    custom_schema = "\n".join([
+        "include\t {}".format(x) for x in glob.iglob(pattern)
+    ])
+    return custom_schema
+
+
 def configure_provider_openldap():
     src = '/ldap/templates/slapd/slapd.conf'
     dest = '/opt/symas/etc/openldap/slapd.conf'
@@ -78,6 +88,7 @@ def configure_provider_openldap():
         'openldapSchemaFolder': '/opt/gluu/schema/openldap',
         'encoded_ldap_pw': get_config('encoded_ldap_pw'),
         'replication_dn': get_config('replication_dn'),
+        "customSchema": get_custom_schema(),
     }
 
     with open(src, 'r') as fp:
@@ -89,7 +100,7 @@ def configure_provider_openldap():
     # register master
     host = guess_ip_addr()
     port = get_config("ldaps_port", 1636)
-    set_config("ldap_masters/{}:{}".format(host, port), {
+    set_config("ldap_servers/{}:{}".format(host, port), {
         "host": host, "port": port,
     })
 
@@ -109,6 +120,5 @@ def sync_ldap_certs():
 
 
 if __name__ == "__main__":
-    logger.info('start of basic configuration')
     sync_ldap_certs()
     configure_provider_openldap()

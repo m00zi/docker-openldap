@@ -4,7 +4,7 @@ A docker image version of OpenLDAP.
 
 ## Latest Stable Release
 
-Latest stable release is `gluufederation/openldap:3.0.1_rev1.0.0-beta4`. See `CHANGES.md` for archives.
+Latest stable release is `gluufederation/openldap:3.1.2_dev`. See `CHANGES.md` for archives.
 
 ## Versioning/Tagging
 
@@ -12,24 +12,18 @@ This image uses its own versioning/tagging format.
 
     <IMAGE-NAME>:<GLUU-SERVER-VERSION>_<INTERNAL-REV-VERSION>
 
-For example, `gluufederation/openldap:3.0.1_rev1.0.0` consists of:
+For example, `gluufederation/openldap:3.1.2_dev` consists of:
 
-- glufederation/openldap as `<IMAGE_NAME>`; the actual image name
-- 3.0.1 as `GLUU-SERVER-VERSION`; the Gluu Server version as setup reference
-- rev1.0.0 as `<INTERNAL-REV-VERSION>`; revision made when developing the image
+- glufederation/openldap as `<IMAGE_NAME>`: the actual image name
+- 3.1.2 as `GLUU-SERVER-VERSION`: the Gluu Server version as setup reference
+- `_dev` as `<BASELINE_DEV>`: used until official production release
 
 ## Installation
 
-Build the image:
+Pull the image:
 
 ```
-docker build --rm --force-rm -t gluufederation/openldap:latest .
-```
-
-Or get it from Docker Hub:
-
-```
-docker pull gluufederation/openldap:latest
+docker pull gluufederation/openldap:3.1.2_dev
 ```
 
 ## Environment Variables
@@ -39,9 +33,10 @@ docker pull gluufederation/openldap:latest
 - `GLUU_LDAP_INIT`: whether to import initial LDAP entries (possible value are `true` or `false`).
 - `GLUU_LDAP_INIT_HOST`: hostname of LDAP for initial configuration (only usable when `GLUU_LDAP_INIT` set to `true`).
 - `GLUU_LDAP_INIT_PORT`: port of LDAP for initial configuration (only usable when `GLUU_LDAP_INIT` set to `true`).
-- `GLUU_CUSTOM_SCHEMA_URL`: URL to downloadable custom schema packed using `.tar.gz` format
+-`GLUU_CUSTOM_SCHEMA_URL`: URL to downloadable custom schema packed using `.tar.gz` format (note this feature is deprecated, instead bind a volume to `/ldap/custom_schema` directly)
 - `GLUU_CACHE_TYPE`: supported values are 'IN_MEMORY' and 'REDIS', default is 'IN_MEMORY'.
 - `GLUU_REDIS_URL`: URL of redis service, format is `redis_host:redis_port` (optional).
+- `GLU_LDAP_ADDR_INTERFACE`: interface name where the IP will be registered
 
 ## Volumes
 
@@ -63,7 +58,7 @@ docker run -d \
     -e GLUU_CACHE_TYPE=REDIS \
     -e GLUU_REDIS_URL='my.redis.hostname:6379' \
     -v /path/to/ldap/flag:/flag \
-    gluufederation/openldap:containership
+    gluufederation/openldap:3.1.2_dev
 ```
 
 Note: to avoid data being re-initialized after container restart, volume mapping of `/flag` directory is encouraged. In the future, the process of LDAP initial data will be taken care by another container.
@@ -76,7 +71,7 @@ docker run -d \
     -e GLUU_KV_HOST=my.consul.domain.com \
     -e GLUU_KV_PORT=8500 \
     -e GLUU_LDAP_INIT=false \
-    gluufederation/openldap:containership
+    gluufederation/openldap:3.1.2_dev
 ```
 
 Note: all containers must be synchronized using `ntp`.
@@ -97,7 +92,7 @@ docker run -d \
     -e GLUU_LDAP_INIT=true \
     -e GLUU_LDAP_INIT_HOST=my.ldap.hostname \
     -e GLUU_LDAP_INIT_PORT=1389 \
-    -e GLUU_CUSTOM_SCHEMA_URL=https://url/of/custom-schema.tar.gz \
     -v /path/to/ldap/flag:/flag \
-    gluufederation/openldap:containership
+    -v /path/to/custom/schema:/ldap/custom_schema \
+    gluufederation/openldap:3.1.2_dev
 ```

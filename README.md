@@ -36,7 +36,7 @@ docker pull gluufederation/openldap:3.1.2_dev
 -`GLUU_CUSTOM_SCHEMA_URL`: URL to downloadable custom schema packed using `.tar.gz` format (note this feature is deprecated, instead bind a volume to `/ldap/custom_schema` directly)
 - `GLUU_CACHE_TYPE`: supported values are 'IN_MEMORY' and 'REDIS', default is 'IN_MEMORY'.
 - `GLUU_REDIS_URL`: URL of redis service, format is `redis_host:redis_port` (optional).
-- `GLU_LDAP_ADDR_INTERFACE`: interface name where the IP will be registered
+- `GLU_LDAP_ADDR_INTERFACE`: interface name where the IP will be registered, if the value is empty, it will try to guess from `eth1` or `eth0`
 
 ## Volumes
 
@@ -78,10 +78,7 @@ Note: all containers must be synchronized using `ntp`.
 
 ## Customizing OpenLDAP
 
-If user has a custome ldap schema then user need to put the schema file in a tar.gz archive.
-This archive will just contain schama file. User need to provide a url for that archive file.
-user must pass custom schema to init ldap master to take effect.
-
+If user has a custom LDAP schema then user need to mount a volume from host into container.
 Here's an example to run the container as ldap master with initial LDAP entries and custom schema:
 
 ```

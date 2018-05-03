@@ -10,13 +10,13 @@ download_custom_schema() {
 }
 
 if [ ! -f /touched ]; then
+    download_custom_schema
     python /ldap/scripts/ldap_configurator.py
     touch /touched
 fi
 
 mkdir -p /flag
 if [ ! -f /flag/ldap_initialized ]; then
-    download_custom_schema
     python /ldap/scripts/ldap_initializer.py
     touch /flag/ldap_initialized
 fi

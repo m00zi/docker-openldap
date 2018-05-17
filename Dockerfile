@@ -60,4 +60,4 @@ EXPOSE 1636
 # Entrypoint
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
-CMD ["/entrypoint.sh"]
+CMD ["/ldap/scripts/wait-for-it", "/entrypoint.sh"]

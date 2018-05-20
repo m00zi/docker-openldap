@@ -50,13 +50,13 @@ Here's an example to run the container as ldap master with initial LDAP entries:
 ```
 docker run -d \
     --name openldap-init \
-    -e GLUU_KV_HOST=my.consul.domain.com \
+    -e GLUU_KV_HOST=consul.example.com \
     -e GLUU_KV_PORT=8500 \
     -e GLUU_LDAP_INIT=true \
-    -e GLUU_LDAP_INIT_HOST=my.ldap.hostname \
-    -e GLUU_LDAP_INIT_PORT=1389 \
+    -e GLUU_LDAP_INIT_HOST=ldap.example.com \
+    -e GLUU_LDAP_INIT_PORT=1636 \
     -e GLUU_CACHE_TYPE=REDIS \
-    -e GLUU_REDIS_URL='my.redis.hostname:6379' \
+    -e GLUU_REDIS_URL='redis.example:6379' \
     -v /path/to/ldap/flag:/flag \
     gluufederation/openldap:3.1.2_dev
 ```
@@ -68,7 +68,7 @@ To add other container(s):
 ```
 docker run -d \
     --name openldap \
-    -e GLUU_KV_HOST=my.consul.domain.com \
+    -e GLUU_KV_HOST=consul.example.com \
     -e GLUU_KV_PORT=8500 \
     -e GLUU_LDAP_INIT=false \
     gluufederation/openldap:3.1.2_dev
@@ -84,11 +84,11 @@ Here's an example to run the container as ldap master with initial LDAP entries 
 ```
 docker run -d \
     --name openldap-init \
-    -e GLUU_KV_HOST=my.consul.domain.com \
+    -e GLUU_KV_HOST=consul.example.com \
     -e GLUU_KV_PORT=8500 \
     -e GLUU_LDAP_INIT=true \
-    -e GLUU_LDAP_INIT_HOST=my.ldap.hostname \
-    -e GLUU_LDAP_INIT_PORT=1389 \
+    -e GLUU_LDAP_INIT_HOST=ldap.example.com \
+    -e GLUU_LDAP_INIT_PORT=1636 \
     -v /path/to/ldap/flag:/flag \
     -v /path/to/custom/schema:/ldap/custom_schema \
     gluufederation/openldap:3.1.2_dev

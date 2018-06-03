@@ -18,8 +18,10 @@ GLUU_LDAP_INIT_HOST = os.environ.get('GLUU_LDAP_INIT_HOST', 'localhost')
 GLUU_LDAP_INIT_PORT = os.environ.get("GLUU_LDAP_INIT_PORT", 1389)
 GLUU_CACHE_TYPE = os.environ.get("GLUU_CACHE_TYPE", 'IN_MEMORY')
 GLUU_REDIS_URL = os.environ.get('GLUU_REDIS_URL', 'localhost:6379')
-TMPDIR = tempfile.mkdtemp()
+GLUU_REDIS_TYPE = os.environ.get('GLUU_REDIS_TYPE', 'STANDALONE')
 GLUU_OXTRUST_CONFIG_GENERATION = os.environ.get("GLUU_OXTRUST_CONFIG_GENERATION", False)
+
+TMPDIR = tempfile.mkdtemp()
 
 consul = consulate.Consul(host=GLUU_KV_HOST, port=GLUU_KV_PORT)
 
@@ -87,6 +89,7 @@ def render_ldif():
         # appliance.ldif
         'cache_provider_type': GLUU_CACHE_TYPE,
         'redis_url': GLUU_REDIS_URL,
+        'redis_type': GLUU_REDIS_TYPE,
         # oxpassport-config.ldif
         'inumAppliance': get_config('inumAppliance'),
         'ldap_hostname': get_config('ldap_init_host'),

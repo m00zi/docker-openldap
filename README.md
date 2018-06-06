@@ -4,26 +4,26 @@ A docker image version of OpenLDAP.
 
 ## Latest Stable Release
 
-Latest stable release is `gluufederation/openldap:3.1.3_dev`. See `CHANGES.md` for archives.
+Latest stable release is `gluufederation/openldap:3.1.3_01`. See `CHANGES.md` for archives.
 
 ## Versioning/Tagging
 
 This image uses its own versioning/tagging format.
 
-    <IMAGE-NAME>:<GLUU-SERVER-VERSION>_<INTERNAL-REV-VERSION>
+    <IMAGE-NAME>:<GLUU-SERVER-VERSION>_<RELEASE_VERSION>
 
-For example, `gluufederation/openldap:3.1.3_dev` consists of:
+For example, `gluufederation/openldap:3.1.3_01` consists of:
 
 - glufederation/openldap as `<IMAGE_NAME>`: the actual image name
 - 3.1.3 as `GLUU-SERVER-VERSION`: the Gluu Server version as setup reference
-- `_dev` as `<BASELINE_DEV>`: used until official production release
+- `01` as `<RELEASE_VERSION>`
 
 ## Installation
 
 Pull the image:
 
 ```
-docker pull gluufederation/openldap:3.1.3_dev
+docker pull gluufederation/openldap:3.1.3_01
 ```
 
 ## Environment Variables
@@ -58,7 +58,7 @@ docker run -d \
     -e GLUU_CACHE_TYPE=REDIS \
     -e GLUU_REDIS_URL='redis.example:6379' \
     -v /path/to/ldap/flag:/flag \
-    gluufederation/openldap:3.1.3_dev
+    gluufederation/openldap:3.1.3_01
 ```
 
 Note: to avoid data being re-initialized after container restart, volume mapping of `/flag` directory is encouraged. In the future, the process of LDAP initial data will be taken care by another container.
@@ -71,7 +71,7 @@ docker run -d \
     -e GLUU_KV_HOST=consul.example.com \
     -e GLUU_KV_PORT=8500 \
     -e GLUU_LDAP_INIT=false \
-    gluufederation/openldap:3.1.3_dev
+    gluufederation/openldap:3.1.3_01
 ```
 
 Note: all containers must be synchronized using `ntp`.
@@ -91,5 +91,5 @@ docker run -d \
     -e GLUU_LDAP_INIT_PORT=1636 \
     -v /path/to/ldap/flag:/flag \
     -v /path/to/custom/schema:/ldap/custom_schema \
-    gluufederation/openldap:3.1.3_dev
+    gluufederation/openldap:3.1.3_01
 ```

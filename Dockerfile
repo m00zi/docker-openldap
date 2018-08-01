@@ -29,7 +29,7 @@ RUN pip install -U pip
 # A workaround to address https://github.com/docker/docker-py/issues/1054
 # # and to make sure latest pip is being used, not from OS one
 ENV PYTHONPATH="/usr/local/lib/python2.7/dist-packages:/usr/lib/python2.7/dist-packages"
-RUN pip install --no-cache-dir -r /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt --ignore-installed six
 
 # ====
 # misc

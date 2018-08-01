@@ -29,7 +29,7 @@ RUN pip install -U pip
 # A workaround to address https://github.com/docker/docker-py/issues/1054
 # # and to make sure latest pip is being used, not from OS one
 ENV PYTHONPATH="/usr/local/lib/python2.7/dist-packages:/usr/lib/python2.7/dist-packages"
-RUN pip install --no-cache-dir -r /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt --ignore-installed six
 
 # ====
 # misc
@@ -57,8 +57,6 @@ RUN mkdir -p /ldap/custom_schema
 
 EXPOSE 1636
 
-ENV GLUU_KV_HOST localhost
-ENV GLUU_KV_PORT 8500
 ENV GLUU_LDAP_ADDR_INTERFACE ""
 ENV GLUU_LDAP_INIT True
 ENV GLUU_LDAP_INIT_HOST localhost

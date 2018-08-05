@@ -1,11 +1,11 @@
 import base64
 import glob
+import logging
 import os
+import shlex
 import shutil
 import subprocess
-import traceback
 import tempfile
-import logging
 
 import pyDes
 
@@ -14,7 +14,8 @@ from gluu_config import ConfigManager
 # Whether initial data should be inserted
 GLUU_LDAP_INIT = os.environ.get("GLUU_LDAP_INIT", True)
 GLUU_LDAP_INIT_HOST = os.environ.get('GLUU_LDAP_INIT_HOST', 'localhost')
-GLUU_LDAP_INIT_PORT = os.environ.get("GLUU_LDAP_INIT_PORT", 1389)
+GLUU_LDAP_INIT_PORT = os.environ.get("GLUU_LDAP_INIT_PORT", 1636)
+GLUU_LDAP_ADDR_INTERFACE = os.environ.get("GLUU_LDAP_ADDR_INTERFACE", "")
 GLUU_CACHE_TYPE = os.environ.get("GLUU_CACHE_TYPE", 'IN_MEMORY')
 GLUU_REDIS_URL = os.environ.get('GLUU_REDIS_URL', 'localhost:6379')
 GLUU_REDIS_TYPE = os.environ.get('GLUU_REDIS_TYPE', 'STANDALONE')
@@ -22,14 +23,14 @@ GLUU_OXTRUST_CONFIG_GENERATION = os.environ.get("GLUU_OXTRUST_CONFIG_GENERATION"
 
 TMPDIR = tempfile.mkdtemp()
 
-config_manager = ConfigManager()
-
-logger = logging.getLogger("ldap_initializer")
+logger = logging.getLogger("entrypoint")
 logger.setLevel(logging.INFO)
 ch = logging.StreamHandler()
 fmt = logging.Formatter('[%(levelname)s] - %(asctime)s - %(message)s')
 ch.setFormatter(fmt)
 logger.addHandler(ch)
+
+config_manager = ConfigManager()
 
 
 def as_boolean(val, default=False):
@@ -41,23 +42,6 @@ def as_boolean(val, default=False):
     if val in falsy:
         return False
     return default
-
-
-def runcmd(args, cwd=None, env=None, useWait=False):
-    try:
-        p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd, env=env)
-        if useWait:
-            code = p.wait()
-            logger.info('Run: %s with result code: %d' % (' '.join(args), code))
-        else:
-            output, err = p.communicate()
-            if output:
-                logger.info(output)
-            if err:
-                logger.warn(err)
-    except Exception:
-        logger.warn('Error running command : %s' % ' '.join(args))
-        logger.warn(traceback.format_exc())
 
 
 def render_ldif():
@@ -201,9 +185,10 @@ def import_ldif():
     for ldif_file in ldif_import_order:
         ldif_file_path = os.path.join(TMPDIR, ldif_file)
         if 'site.ldif' in ldif_file_path:
-            runcmd([slapadd_cmd, '-b', 'o=site', '-f', config, '-l', ldif_file_path])
+            base_dn = "o=site"
         else:
-            runcmd([slapadd_cmd, '-b', 'o=gluu', '-f', config, '-l', ldif_file_path])
+            base_dn = "o=gluu"
+        exec_cmd("{} -b {} -f {} -l {}".format(slapadd_cmd, base_dn, config, ldif_file_path))
 
 
 def cleanup():
@@ -268,20 +253,6 @@ def oxtrust_config():
             config_manager.set(key, generate_base64_contents(fp.read() % ctx))
 
 
-def run():
-    if as_boolean(GLUU_LDAP_INIT):
-        config_manager.set('ldap_init_host', GLUU_LDAP_INIT_HOST)
-        config_manager.set('ldap_init_port', GLUU_LDAP_INIT_PORT)
-        config_manager.set("oxTrustConfigGeneration", as_boolean(GLUU_OXTRUST_CONFIG_GENERATION))
-
-        oxtrust_config()
-        logger.info('start rendering of ldif files')
-        render_ldif()
-        logger.info('start importing rendered ldif files')
-        import_ldif()
-    cleanup()
-
-
 def decrypt_text(encrypted_text, key):
     cipher = pyDes.triple_des(b"{}".format(key), pyDes.ECB,
                               padmode=pyDes.PAD_PKCS5)
@@ -289,5 +260,81 @@ def decrypt_text(encrypted_text, key):
     return cipher.decrypt(encrypted_text)
 
 
-if __name__ == '__main__':
-    run()
+def get_custom_schema():
+    pattern = "/ldap/custom_schema/*.schema"
+
+    custom_schema = "\n".join([
+        "include\t {}".format(x) for x in glob.iglob(pattern)
+    ])
+    return custom_schema
+
+
+def configure_provider_openldap():
+    src = '/ldap/templates/slapd/slapd.conf'
+    dest = '/opt/symas/etc/openldap/slapd.conf'
+
+    ctx_data = {
+        'openldapSchemaFolder': '/opt/gluu/schema/openldap',
+        'encoded_ldap_pw': config_manager.get('encoded_ldap_pw'),
+        'replication_dn': config_manager.get('replication_dn'),
+        "customSchema": get_custom_schema(),
+    }
+
+    with open(src, 'r') as fp:
+        slapd_template = fp.read()
+
+    with open(dest, 'w') as fp:
+        fp.write(slapd_template % ctx_data)
+
+
+def sync_ldap_certs():
+    """Gets openldap.crt, openldap.key, and openldap.pem
+    """
+    ssl_cert = decrypt_text(config_manager.get("ldap_ssl_cert"), config_manager.get("encoded_salt"))
+    with open("/etc/certs/openldap.crt", "w") as fw:
+        fw.write(ssl_cert)
+    ssl_key = decrypt_text(config_manager.get("ldap_ssl_key"), config_manager.get("encoded_salt"))
+    with open("/etc/certs/openldap.key", "w") as fw:
+        fw.write(ssl_key)
+    ssl_cacert = decrypt_text(config_manager.get("ldap_ssl_cacert"), config_manager.get("encoded_salt"))
+    with open("/etc/certs/openldap.pem", "w") as fw:
+        fw.write(ssl_cacert)
+
+
+def exec_cmd(cmd):
+    """Executes shell command.
+
+    :param cmd: String of shell command.
+    :returns: A tuple consists of stdout, stderr, and return code
+              returned from shell command execution.
+    """
+    args = shlex.split(cmd)
+    popen = subprocess.Popen(args,
+                             stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+    stdout, stderr = popen.communicate()
+    retcode = popen.returncode
+    return stdout, stderr, retcode
+
+
+def main():
+    sync_ldap_certs()
+    configure_provider_openldap()
+
+    if as_boolean(GLUU_LDAP_INIT):
+        if not os.path.isfile("/flag/ldap_initialized"):
+            config_manager.set('ldap_init_host', GLUU_LDAP_INIT_HOST)
+            config_manager.set('ldap_init_port', GLUU_LDAP_INIT_PORT)
+            config_manager.set("oxTrustConfigGeneration", as_boolean(GLUU_OXTRUST_CONFIG_GENERATION))
+
+            oxtrust_config()
+            render_ldif()
+            import_ldif()
+
+            exec_cmd("touch /flag/ldap_initialized")
+    cleanup()
+
+
+if __name__ == "__main__":
+    main()

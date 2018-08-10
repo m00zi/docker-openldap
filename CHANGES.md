@@ -2,6 +2,12 @@
 
 Here you can see an overview of changes between each release.
 
+## Version 3.1.3_03
+
+Released on August 11th, 2018.
+
+* Added feature to re-generate certificate with Subject Alt Name.
+
 ## Version 3.1.3_02
 
 Released on August 1st, 2018.

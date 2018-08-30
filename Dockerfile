@@ -32,6 +32,14 @@ ENV PYTHONPATH="/usr/local/lib/python2.7/dist-packages:/usr/lib/python2.7/dist-p
 RUN pip install --no-cache-dir -r /tmp/requirements.txt --ignore-installed six
 
 # ====
+# Tini
+# ====
+
+ENV TINI_VERSION v0.18.0
+RUN wget -q https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static -O /usr/bin/tini \
+    && chmod +x /usr/bin/tini
+
+# ====
 # misc
 # ====
 RUN mkdir -p /var/symas/run \
@@ -68,4 +76,5 @@ ENV GLUU_OXTRUST_CONFIG_GENERATION False
 ENV GLUU_REDIS_TYPE STANDALONE
 
 # Entrypoint
+ENTRYPOINT ["tini", "--"]
 CMD ["/ldap/scripts/wait-for-it", "/ldap/scripts/entrypoint.sh"]

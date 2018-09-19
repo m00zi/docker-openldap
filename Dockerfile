@@ -55,6 +55,7 @@ RUN mkdir -p /var/symas/run \
 COPY schema /opt/gluu/schema/openldap
 COPY templates ./templates
 COPY scripts ./scripts
+COPY static ./static
 RUN cp ./templates/slapd/symas-openldap.conf /opt/symas/etc/openldap/symas-openldap.conf
 
 # Volumes
@@ -84,6 +85,7 @@ ENV GLUU_LDAP_INIT_HOST localhost
 ENV GLUU_LDAP_INIT_PORT 1636
 ENV GLUU_CACHE_TYPE IN_MEMORY
 ENV GLUU_REDIS_URL localhost:6379
+ENV GLUU_MEMCACHED_URL localhost:11211
 ENV GLUU_OXTRUST_CONFIG_GENERATION False
 ENV GLUU_REDIS_TYPE STANDALONE
 

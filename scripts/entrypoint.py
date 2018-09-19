@@ -1,5 +1,6 @@
 import base64
 import glob
+import json
 import logging
 import os
 import shlex
@@ -19,6 +20,7 @@ GLUU_LDAP_ADDR_INTERFACE = os.environ.get("GLUU_LDAP_ADDR_INTERFACE", "")
 GLUU_CACHE_TYPE = os.environ.get("GLUU_CACHE_TYPE", 'IN_MEMORY')
 GLUU_REDIS_URL = os.environ.get('GLUU_REDIS_URL', 'localhost:6379')
 GLUU_REDIS_TYPE = os.environ.get('GLUU_REDIS_TYPE', 'STANDALONE')
+GLUU_MEMCACHED_URL = os.environ.get("GLUU_MEMCACHED_URL", "localhost:11211")
 GLUU_OXTRUST_CONFIG_GENERATION = os.environ.get("GLUU_OXTRUST_CONFIG_GENERATION", False)
 GLUU_CERT_ALT_NAME = os.environ.get("GLUU_CERT_ALT_NAME", "")
 
@@ -54,6 +56,7 @@ def render_ldif():
         'cache_provider_type': GLUU_CACHE_TYPE,
         'redis_url': GLUU_REDIS_URL,
         'redis_type': GLUU_REDIS_TYPE,
+        'memcached_url': GLUU_MEMCACHED_URL,
         # oxpassport-config.ldif
         'inumAppliance': config_manager.get('inumAppliance'),
         'ldap_hostname': config_manager.get('ldap_init_host'),
@@ -79,6 +82,8 @@ def render_ldif():
         'oxauth_client_id': config_manager.get('oxauth_client_id'),
         'oxauthClient_encoded_pw': config_manager.get('oxauthClient_encoded_pw'),
         'hostname': config_manager.get('hostname'),
+        'idp_client_id': config_manager.get('idp_client_id'),
+        'idpClient_encoded_pw': config_manager.get('idpClient_encoded_pw'),
 
         # configuration.ldif
         'oxauth_config_base64': config_manager.get('oxauth_config_base64'),
@@ -97,6 +102,8 @@ def render_ldif():
         'passport_rs_client_base64_jwks': config_manager.get('passport_rs_client_base64_jwks'),
         'passport_rp_client_id': config_manager.get('passport_rp_client_id'),
         'passport_rp_client_base64_jwks': config_manager.get('passport_rp_client_base64_jwks'),
+        "passport_rp_client_jks_fn": config_manager.get("passport_rp_client_jks_fn"),
+        "passport_rp_client_jks_pass": config_manager.get("passport_rp_client_jks_pass"),
 
         # people.ldif
         "encoded_ldap_pw": config_manager.get('encoded_ldap_pw'),
@@ -137,10 +144,11 @@ def render_ldif():
         "uma_rpt_policy_umaclientauthzrptpolicy": config_manager.get("uma_rpt_policy_umaclientauthzrptpolicy"),
         "person_authentication_samlpassportauthenticator": config_manager.get("person_authentication_samlpassportauthenticator"),
         "consent_gathering_consentgatheringsample": config_manager.get("consent_gathering_consentgatheringsample"),
+        "person_authentication_thumbsigninexternalauthenticator": config_manager.get("person_authentication_thumbsigninexternalauthenticator"),
 
-        # scripts_cred_manager
-        "person_authentication_credmanager": config_manager.get("person_authentication_credmanager"),
-        "client_registration_credmanager": config_manager.get("client_registration_credmanager"),
+        # scripts_casa
+        "person_authentication_casa": config_manager.get("person_authentication_casa"),
+        "client_registration_casa": config_manager.get("client_registration_casa"),
 
         # replication.ldif
         'replication_dn': config_manager.get('replication_dn'),
@@ -270,6 +278,17 @@ def get_custom_schema():
     return custom_schema
 
 
+def get_openldap_indexes():
+    output = ""
+    with open("/ldap/static/index.json") as fr:
+        indexes = json.loads(fr.read())
+        output = "\n".join([
+            "index\t{}\t{}".format(index["attribute"], index["index"])
+            for index in indexes["indexes"]
+        ])
+    return output
+
+
 def configure_provider_openldap():
     src = '/ldap/templates/slapd/slapd.conf'
     dest = '/opt/symas/etc/openldap/slapd.conf'
@@ -279,6 +298,7 @@ def configure_provider_openldap():
         'encoded_ldap_pw': config_manager.get('encoded_ldap_pw'),
         'replication_dn': config_manager.get('replication_dn'),
         "customSchema": get_custom_schema(),
+        "openldap_indexes": get_openldap_indexes(),
     }
 
     with open(src, 'r') as fp:

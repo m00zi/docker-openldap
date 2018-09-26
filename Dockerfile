@@ -42,28 +42,6 @@ RUN wget -q https://github.com/krallin/tini/releases/download/${TINI_VERSION}/ti
 # ====
 # misc
 # ====
-RUN mkdir -p /var/symas/run \
-    && mkdir -p /opt/symas/etc/openldap \
-    && mkdir -p /opt/gluu/schema/openldap \
-    && mkdir -p /opt/gluu/data/accesslog \
-    && mkdir -p /etc/certs \
-    && mkdir -p /opt/symas/etc/openldap/slapd.d \
-    && mkdir -p /opt/gluu/data/main_db \
-    && mkdir -p /opt/gluu/data/site_db \
-    && mkdir -p /flag
-
-COPY schema /opt/gluu/schema/openldap
-COPY templates ./templates
-COPY scripts ./scripts
-COPY static ./static
-RUN cp ./templates/slapd/symas-openldap.conf /opt/symas/etc/openldap/symas-openldap.conf
-
-# Volumes
-VOLUME /opt/gluu/data/main_db
-VOLUME /opt/gluu/data/site_db
-
-# Custom schema path
-RUN mkdir -p /ldap/custom_schema
 
 EXPOSE 1636
 
@@ -88,6 +66,29 @@ ENV GLUU_REDIS_URL localhost:6379
 ENV GLUU_MEMCACHED_URL localhost:11211
 ENV GLUU_OXTRUST_CONFIG_GENERATION False
 ENV GLUU_REDIS_TYPE STANDALONE
+
+RUN mkdir -p /var/symas/run \
+    && mkdir -p /opt/symas/etc/openldap \
+    && mkdir -p /opt/gluu/schema/openldap \
+    && mkdir -p /opt/gluu/data/accesslog \
+    && mkdir -p /etc/certs \
+    && mkdir -p /opt/symas/etc/openldap/slapd.d \
+    && mkdir -p /opt/gluu/data/main_db \
+    && mkdir -p /opt/gluu/data/site_db \
+    && mkdir -p /flag
+
+COPY schema /opt/gluu/schema/openldap
+COPY templates ./templates
+COPY scripts ./scripts
+COPY static ./static
+RUN cp ./templates/slapd/symas-openldap.conf /opt/symas/etc/openldap/symas-openldap.conf
+
+# Volumes
+VOLUME /opt/gluu/data/main_db
+VOLUME /opt/gluu/data/site_db
+
+# Custom schema path
+RUN mkdir -p /ldap/custom_schema
 
 # Entrypoint
 ENTRYPOINT ["tini", "--"]
